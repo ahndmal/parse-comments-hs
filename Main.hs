@@ -33,13 +33,11 @@ parseComment str = do
     comment
 
 
-main :: IO()
-main = do
-    start <- getCurrentTime
-    print start 
+countFileData :: String -> String -> IO()
+countFileData root f = do
+    print ( ">>> parsing: " ++ f )
 
-    let root = "/home/andrii/_data/"
-    handle <- openFile (root ++ "comments.log.2023-01-21.0") ReadMode
+    handle <- openFile (root ++ f) ReadMode
     contents <- hGetContents handle
     let cLines = lines contents
     putStrLn ( ">> lines: " ++ (show $ length cLines) )
@@ -51,8 +49,22 @@ main = do
     let vowelWords = filter (\w -> vowel w) allWords
     putStrLn ( ">> voweled: " ++ (show $ length vowelWords) )
 
-    hClose handle  
+    hClose handle 
+    print "\n"
+    --    (show f, length cLines, wordsN)
+
+
+main :: IO()
+main = do
+    start <- getCurrentTime
+    print start 
+
+    let root = "/home/andrii/_data/"
     
+    files <- listDirectory root
+
+    for_ files (\f -> countFileData root f )
+
     end <- getCurrentTime
     let taken = diffUTCTime start end
     print taken
